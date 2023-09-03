@@ -6,7 +6,7 @@ import { TsconfigPathsPlugin } from 'tsconfig-paths-webpack-plugin';
 const config: Configuration = {
   entry: './src/index.ts',
   target: 'node',
-  mode: 'development',
+  mode: 'production',
   externals: [nodeExternals()],
   output: {
     path: join(__dirname, 'dist'),
@@ -21,7 +21,7 @@ const config: Configuration = {
       },
       {
         test: /\.json$/,
-        type: 'javascript/auto', // Webpack 5
+        type: 'json',
       },
     ],
   },
