@@ -1,0 +1,9 @@
+{
+  "onPollSchedulled": "Теперь к вашему чату подключены еженедельные опросы.",
+  "onPollUpdate": "Время и место опроса обновлены",
+  "onPollExist": "Опрос уже установлен, прежде чем начать новый завершите текущий опрос.",
+  "onClose": "Опрос остановлен.",
+  "commandStart": "/start",
+  "commandStop": "/stop",
+  "commandChange": "/change"
+}

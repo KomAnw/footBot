@@ -1,0 +1,33 @@
+{
+  "name": "foot_bot",
+  "version": "1.0.0",
+  "main": "index.ts",
+  "repository": "",
+  "scripts": {
+    "dev": "ts-node-dev --respawn --transpile-only src/index.ts",
+    "build": "webpack --config webpack.config.ts"
+  },
+  "devDependencies": {
+    "@types/express": "4.17.17",
+    "@types/node": "20.3.2",
+    "@types/node-schedule": "^2.1.0",
+    "@types/node-telegram-bot-api": "^0.61.7",
+    "@types/webpack-hot-middleware": "2.25.6",
+    "@types/webpack-node-externals": "3.0.0",
+    "ts-loader": "9.4.4",
+    "ts-node": "10.9.1",
+    "ts-node-dev": "2.0.0",
+    "tsconfig-paths-webpack-plugin": "^4.0.1",
+    "typescript": "5.1.6",
+    "webpack": "5.88.1",
+    "webpack-cli": "5.1.4",
+    "webpack-dev-server": "4.15.1",
+    "webpack-node-externals": "3.0.0"
+  },
+  "dependencies": {
+    "dayjs": "^1.11.9",
+    "dotenv": "^16.3.1",
+    "node-schedule": "^2.1.1",
+    "node-telegram-bot-api": "^0.61.0"
+  }
+}
