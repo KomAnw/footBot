@@ -54,8 +54,6 @@ class BotApi {
     const [_, time, place, day] = match![0].split(' ');
     constsInstance.setPollOptions(time, place, day as keyof typeof days);
 
-    console.log(this.constsInstance.consts);
-
     this.job = scheduleJob({ rule: this.constsInstance.scheduledDate(), tz: this.tz }, () =>
       createPool(chatId, this.constsInstance.consts.pollOptions)
     );

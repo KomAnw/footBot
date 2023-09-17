@@ -35,7 +35,6 @@ export class Constants {
   }
 
   getOptions = () => {
-    console.log(this.gameTime);
     return {
       question: `Игра ${dayjs().format('DD.MM')} в ${this.gameTime}, ${this.place}`,
       options: ['Буду', 'Буду +1', 'Нет'],
@@ -47,8 +46,8 @@ export class Constants {
   getPollTimer = () => {
     return (this.pollTimer = {
       second: '5',
-      minute: '40',
-      hour: '3',
+      minute: '23',
+      hour: '0',
       day_of_week: `${days[this.day]}`,
     });
   };
