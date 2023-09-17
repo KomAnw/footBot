@@ -1,6 +1,7 @@
 import { getScheduledDate } from './utils';
 import dayjs from 'dayjs';
 import { PollOptions, ScheduledDate } from './types';
+import { commandChange, commandStart, commandStop } from './texts.json';
 
 export const days = {
   воскресенье: 0,
@@ -11,6 +12,19 @@ export const days = {
   пятница: 5,
   суббота: 6,
 };
+
+export const comands = `
+Команды бота:
+
+${commandStart} – установить опрос
+${commandStop} – остановить опрос
+${commandChange} – меняет место и время опроса
+
+Как работают команды, примеры:
+
+${commandStart} 21:00 Коломяги среда
+${commandChange} 20:00 Коломяги воскресенье
+`;
 
 export class Constants {
   pollOptions: PollOptions | null;
@@ -46,8 +60,8 @@ export class Constants {
   getPollTimer = () => {
     return (this.pollTimer = {
       second: '5',
-      minute: '23',
-      hour: '0',
+      minute: '0',
+      hour: '7',
       day_of_week: `${days[this.day]}`,
     });
   };
@@ -58,7 +72,7 @@ export class Constants {
     this.day = day;
   }
 
-  scheduledDate = () => getScheduledDate(this.pollTimer!);
+  scheduledDate = () => getScheduledDate(this.getPollTimer());
 }
 
 export const constsInstance = new Constants();

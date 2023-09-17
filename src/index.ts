@@ -1,30 +1,9 @@
 import { Job, scheduleJob } from 'node-schedule';
-import { Constants, constsInstance, days } from './consts';
+import { Constants, comands, constsInstance, days } from './consts';
 import { createPool } from './utils';
-import {
-  onPollSchedulled,
-  onPollExist,
-  onClose,
-  onPollUpdate,
-  commandChange,
-  commandStart,
-  commandStop,
-} from './texts.json';
+import { onPollSchedulled, onPollExist, onClose, onPollUpdate } from './texts.json';
 import { botInstance } from './bot';
 import TelegramBot from 'node-telegram-bot-api';
-
-const comands = `
-Команды бота:
-
-${commandStart} – установить опрос
-${commandStop} – остановить опрос
-${commandChange} – меняет место и время опроса
-
-Как работают команды, примеры:
-
-${commandStart} 21:00 Коломяги среда
-${commandChange} 20:00 Коломяги воскресенье
-`;
 
 class BotApi {
   chatId: null | string;
@@ -57,6 +36,7 @@ class BotApi {
     this.job = scheduleJob({ rule: this.constsInstance.scheduledDate(), tz: this.tz }, () =>
       createPool(chatId, this.constsInstance.consts.pollOptions)
     );
+
     updated
       ? botInstance.sendMessage(chatId, onPollUpdate)
       : botInstance.sendMessage(chatId, onPollSchedulled);
