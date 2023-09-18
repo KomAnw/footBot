@@ -26,7 +26,7 @@ class BotApi {
     const chatId = msg.chat.id.toString();
 
     if (this.job) {
-      botInstance.sendMessage(chatId, onPollExist);
+      // botInstance.sendMessage(chatId, onPollExist);
       return;
     }
 
@@ -64,10 +64,10 @@ class BotApi {
   };
 
   listners = () => {
-    botInstance.onText(/\/help/, this.help);
+    // botInstance.onText(/\/help/, this.help);
     botInstance.onText(/\/start \d{2}:\d{2} [а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+$/iu, this.handleStartPolling);
-    botInstance.onText(/\/stop/, this.handleStop);
-    botInstance.onText(/\/change/, this.handleNewTimeAndPlace);
+    // botInstance.onText(/\/stop/, this.handleStop);
+    // botInstance.onText(/\/change/, this.handleNewTimeAndPlace);
   };
 }
 
