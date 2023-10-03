@@ -51,7 +51,7 @@ export class Constants {
   getOptions = () => {
     return {
       question: `Игра ${dayjs().format('DD.MM')} в ${this.gameTime}, ${this.place}`,
-      options: ['Буду', 'Буду +1', 'Нет'],
+      options: ['Буду', 'Буду +1', 'Нет', 'Пока думаю'],
       is_anonymous: false,
       allows_multiple_answers: false,
     };
