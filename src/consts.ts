@@ -61,7 +61,7 @@ export class Constants {
     return (this.pollTimer = {
       second: '5',
       minute: '0',
-      hour: '7',
+      hour: '6',
       day_of_week: `${days[this.day]}`,
     });
   };

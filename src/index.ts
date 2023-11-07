@@ -1,7 +1,7 @@
 import { Job, scheduleJob } from 'node-schedule';
 import { Constants, comands, constsInstance, days } from './consts';
 import { createPool } from './utils';
-import { onPollSchedulled, onPollExist, onClose, onPollUpdate } from './texts.json';
+import { onPollSchedulled, onClose, onPollUpdate } from './texts.json';
 import { botInstance } from './bot';
 import TelegramBot from 'node-telegram-bot-api';
 
@@ -23,8 +23,10 @@ class BotApi {
     match: RegExpExecArray | null,
     updated?: boolean
   ) => {
+    console.log(123412);
     const chatId = msg.chat.id.toString();
 
+    console.log(this.job);
     if (this.job) {
       // botInstance.sendMessage(chatId, onPollExist);
       return;
@@ -40,6 +42,7 @@ class BotApi {
     updated
       ? botInstance.sendMessage(chatId, onPollUpdate)
       : botInstance.sendMessage(chatId, onPollSchedulled);
+    console.log('started');
   };
 
   handleStop = (msg: TelegramBot.Message) => {
@@ -64,10 +67,7 @@ class BotApi {
   };
 
   listners = () => {
-    // botInstance.onText(/\/help/, this.help);
     botInstance.onText(/\/start \d{2}:\d{2} [а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+$/iu, this.handleStartPolling);
-    // botInstance.onText(/\/stop/, this.handleStop);
-    // botInstance.onText(/\/change/, this.handleNewTimeAndPlace);
   };
 }
 
