@@ -23,10 +23,8 @@ class BotApi {
     match: RegExpExecArray | null,
     updated?: boolean
   ) => {
-    console.log(123412);
     const chatId = msg.chat.id.toString();
 
-    console.log(this.job);
     if (this.job) {
       // botInstance.sendMessage(chatId, onPollExist);
       return;
@@ -42,7 +40,8 @@ class BotApi {
     updated
       ? botInstance.sendMessage(chatId, onPollUpdate)
       : botInstance.sendMessage(chatId, onPollSchedulled);
-    console.log('started');
+
+    botInstance.sendMessage(chatId, 'ok');
   };
 
   handleStop = (msg: TelegramBot.Message) => {
