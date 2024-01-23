@@ -40,8 +40,6 @@ class BotApi {
     updated
       ? botInstance.sendMessage(chatId, onPollUpdate)
       : botInstance.sendMessage(chatId, onPollSchedulled);
-
-    botInstance.sendMessage(chatId, 'ok');
   };
 
   handleStop = (msg: TelegramBot.Message) => {
