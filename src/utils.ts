@@ -1,25 +1,38 @@
-import { RecurrenceRule } from 'node-schedule';
-import { PollOptions, ScheduledDate } from './types';
-import { botInstance } from './bot';
+import schedule, { Job, RecurrenceRule } from 'node-schedule';
+import { POLL_OPTIONS, POLL_QUESTION, TIMEZONE, WEDNESDAY_HOUR, WEDNESDAY_MINUTE } from './consts';
+import { Bot } from 'grammy';
 
-export const getScheduledDate = (params: ScheduledDate) => {
-  const {
-    day_of_week = '*',
-    month = '*',
-    day_of_month = '*',
-    hour = '*',
-    minute = '*',
-    second = '*',
-  } = params;
+const logMessage = `Bot will send a poll every Wednesday in ${WEDNESDAY_HOUR}:${String(
+  WEDNESDAY_MINUTE
+).padStart(2, '0')} (${TIMEZONE}).`;
 
-  return `${second} ${minute} ${hour} ${day_of_month} ${month} ${day_of_week}`;
+export const makeRule = (): RecurrenceRule => {
+  const rule = new schedule.RecurrenceRule();
+  rule.dayOfWeek = 2;
+  rule.tz = TIMEZONE;
+  rule.hour = WEDNESDAY_HOUR;
+  rule.minute = WEDNESDAY_MINUTE;
+  return rule;
 };
 
-export const createPool = (chatId: string, pollOptions: PollOptions) => {
-  const { question, options, is_anonymous, allows_multiple_answers } = pollOptions;
+export const scheduleWeeklyPoll = async (
+  bot: Bot,
+  chatId: number,
+  scheduledJobs: Map<number, Job>
+) => {
+  const prev = scheduledJobs.get(chatId);
+  if (prev) prev.cancel();
 
-  botInstance.sendPoll(chatId, question, options, {
-    is_anonymous,
-    allows_multiple_answers,
+  const job = schedule.scheduleJob(makeRule(), async () => {
+    try {
+      await bot.api.sendPoll(chatId, POLL_QUESTION, POLL_OPTIONS, {
+        is_anonymous: false,
+        allows_multiple_answers: false,
+      });
+    } catch (e) {}
   });
+
+  scheduledJobs.set(chatId, job);
+  console.info(`⏰ Job scheduled for chat ${chatId}.`);
+  console.info(`📊 ${logMessage}`);
 };

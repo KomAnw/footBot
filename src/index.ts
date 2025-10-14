@@ -1,71 +1,71 @@
-import { Job, scheduleJob } from 'node-schedule';
-import { Constants, comands, constsInstance, days } from './consts';
-import { createPool } from './utils';
-import { onPollSchedulled, onClose, onPollUpdate } from './texts.json';
-import { botInstance } from './bot';
-import TelegramBot from 'node-telegram-bot-api';
+import { Bot, Context, GrammyError, HttpError } from 'grammy';
+import { Job } from 'node-schedule';
+import { scheduleWeeklyPoll } from './utils';
+import { TOKEN } from './consts';
 
-class BotApi {
-  chatId: null | string;
-  job: null | Job;
-  tz: string;
-  constsInstance: Constants;
-
-  constructor() {
-    this.chatId = null;
-    this.job = null;
-    this.tz = 'Europe/Moscow';
-    this.constsInstance = constsInstance;
-  }
-
-  handleStartPolling = (
-    msg: TelegramBot.Message,
-    match: RegExpExecArray | null,
-    updated?: boolean
-  ) => {
-    const chatId = msg.chat.id.toString();
-
-    if (this.job) {
-      // botInstance.sendMessage(chatId, onPollExist);
-      return;
-    }
-
-    const [_, time, place, day] = match![0].split(' ');
-    constsInstance.setPollOptions(time, place, day as keyof typeof days);
-
-    this.job = scheduleJob({ rule: this.constsInstance.scheduledDate(), tz: this.tz }, () =>
-      createPool(chatId, this.constsInstance.consts.pollOptions)
-    );
-
-    updated
-      ? botInstance.sendMessage(chatId, onPollUpdate)
-      : botInstance.sendMessage(chatId, onPollSchedulled);
-  };
-
-  handleStop = (msg: TelegramBot.Message) => {
-    const chatId = msg.chat.id.toString();
-
-    if (this.job) {
-      this.job.cancel();
-      this.job = null;
-      botInstance.sendMessage(chatId, onClose);
-    }
-  };
-
-  handleNewTimeAndPlace = (msg: TelegramBot.Message, match: RegExpExecArray | null) => {
-    this.handleStop(msg);
-    this.handleStartPolling(msg, match, true);
-  };
-
-  help = (msg: TelegramBot.Message) => {
-    const chatId = msg.chat.id.toString();
-
-    botInstance.sendMessage(chatId, comands);
-  };
-
-  listners = () => {
-    botInstance.onText(/\/start \d{2}:\d{2} [а-яА-ЯёЁ]+ [а-яА-ЯёЁ]+$/iu, this.handleStartPolling);
-  };
+if (!TOKEN) {
+  throw new Error('BOT_TOKEN is required in .env');
 }
 
-new BotApi().listners();
+const bot = new Bot<Context>(TOKEN);
+
+const activatedChats = new Set<number>();
+const scheduledJobs = new Map<number, Job>();
+
+bot.command('start', async (ctx) => {
+  const chat = ctx.chat;
+  if (!chat) return;
+
+  if (chat.type !== 'group' && chat.type !== 'supergroup') {
+    return ctx.reply(
+      'This bot works only in group chats. Add the bot to the group and send /start.'
+    );
+  }
+
+  const chatId = chat.id;
+
+  if (!activatedChats.has(chatId)) {
+    activatedChats.add(chatId);
+
+    console.info(`🚀 Bot started for this chat.`);
+
+    await scheduleWeeklyPoll(bot, chatId, scheduledJobs);
+  }
+});
+
+bot.on('message', async (ctx, next) => {
+  const chatId = ctx.chat?.id;
+  if (chatId && activatedChats.has(chatId)) {
+    return;
+  }
+
+  console.info(`📨 Bot accepted message from this chat.`);
+
+  return next();
+});
+
+bot.catch((err) => {
+  const ctx = err.ctx;
+  console.error(`⚠️ Error while handling update ${ctx.update.update_id}:`);
+  const e = err.error;
+  if (e instanceof GrammyError) {
+    console.error('🔴 GrammyError:', e.description);
+  } else if (e instanceof HttpError) {
+    console.error('🔴 HttpError:', e);
+  } else {
+    console.error('❓ Unknown error:', e);
+  }
+});
+
+bot.start().then(() => {
+  console.info(`👂 Bot listening for messages in this chat.`);
+});
+
+function shutdown() {
+  console.info('🛑 Shutting down…');
+  for (const [, job] of scheduledJobs) job.cancel();
+  process.exit(0);
+}
+
+process.on('SIGINT', shutdown);
+process.on('SIGTERM', shutdown);
